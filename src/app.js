@@ -22,6 +22,21 @@ const ART_CACHE_STORAGE_KEY = 'pear-art-cache-v1';
 const ART_CACHE_MAX_ENTRIES = 60;
 const ART_MAX_BLOB_BYTES = 280000;
 
+const lyricModeSelect = document.getElementById('lyric-mode-select');
+const LYRIC_MODE_STORAGE_KEY = 'pear-lyrics-mode';
+
+function loadLyricMode() {
+    return localStorage.getItem(LYRIC_MODE_STORAGE_KEY) || 'word-by-word';
+}
+
+let lyricMode = loadLyricMode();
+lyricModeSelect.value = lyricMode;
+lyricModeSelect.addEventListener('change', () => {
+    lyricMode = lyricModeSelect.value;
+    localStorage.setItem(LYRIC_MODE_STORAGE_KEY, lyricMode);
+    currentLineIndex = -1; // force re-render on next tick
+});
+
 let currentHost = loadApiHost();
 let currentPort = portInput.value || '26538';
 let currentTrackId = '';
@@ -730,14 +745,25 @@ function startWordByWord(textString, availableMs, lineIndex) {
     const rawSlotMs = availableMs / wordCount;
     const slotMs = Math.max(80, Math.min(600, rawSlotMs));
 
-    words.forEach((word, index) => {
-        const delay = index * slotMs;
-        const t = setTimeout(() => {
-            if (wbwLineIndex !== lineIndex) return;
-            showSingleWord(word);
-        }, delay);
-        wbwTimers.push(t);
-    });
+    if (lyricMode === 'build-up') {
+        words.forEach((word, index) => {
+            const delay = index * slotMs;
+            const t = setTimeout(() => {
+                if (wbwLineIndex !== lineIndex) return;
+                showBuildUp(words, index);
+            }, delay);
+            wbwTimers.push(t);
+        });
+    } else {
+        words.forEach((word, index) => {
+            const delay = index * slotMs;
+            const t = setTimeout(() => {
+                if (wbwLineIndex !== lineIndex) return;
+                showSingleWord(word);
+            }, delay);
+            wbwTimers.push(t);
+        });
+    }
 }
 
 function showSingleWord(word) {
@@ -752,6 +778,36 @@ function showSingleWord(word) {
     span.style.animationDelay = '0s, 0s';
 
     lineWrapper.appendChild(span);
+    lyricsTarget.appendChild(lineWrapper);
+}
+
+function showBuildUp(words, revealedUpTo) {
+    lyricsTarget.innerHTML = '';
+
+    const lineWrapper = document.createElement('div');
+    lineWrapper.className = 'lyric-line lyric-line--live';
+
+    words.forEach((word, index) => {
+        const span = document.createElement('span');
+        span.textContent = word;
+
+        if (index < revealedUpTo) {
+            // Already-revealed words: visible but dimmed
+            span.className = 'lyric-word lyric-word--revealed';
+            span.style.animationDelay = '0s, 0s';
+        } else if (index === revealedUpTo) {
+            // The newest word: burst animation
+            span.className = 'lyric-word';
+            span.style.animationDelay = '0s, 0s';
+        } else {
+            // Not-yet-revealed words: invisible placeholder to hold layout
+            span.className = 'lyric-word lyric-word--hidden';
+            span.style.animationDelay = '0s, 0s';
+        }
+
+        lineWrapper.appendChild(span);
+    });
+
     lyricsTarget.appendChild(lineWrapper);
 }
 

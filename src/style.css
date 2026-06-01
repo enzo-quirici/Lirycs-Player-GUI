@@ -73,6 +73,19 @@ body {
 #port-input:focus,
 #sync-offset-input:focus { border-color: rgba(255,255,255,0.3); }
 
+#lyric-mode-select {
+    background: rgba(0, 0, 0, 0.5);
+    border: 1px solid var(--glass-border);
+    color: #fff;
+    padding: 5px 8px;
+    border-radius: 6px;
+    font-weight: bold;
+    outline: none;
+    cursor: pointer;
+    font-size: 0.8rem;
+}
+#lyric-mode-select:focus { border-color: rgba(255,255,255,0.3); }
+
 .custom-file-upload {
     background: rgba(255, 255, 255, 0.06); border: 1px solid var(--glass-border);
     padding: 6px 12px; border-radius: 6px; cursor: pointer; width: 100%; text-align: center;
@@ -158,6 +171,28 @@ body {
 @keyframes wordShine {
     0%, 100% { background-position: 0% center; }
     50% { background-position: 100% center; }
+}
+
+/* Build-up mode: already-revealed words stay visible but slightly dimmed */
+.lyric-word--revealed {
+    opacity: 0.45;
+    transform: translate3d(0, 0, 0) scale(1);
+    filter: blur(0);
+    animation: none !important;
+    background: linear-gradient(120deg, #ffffff 0%, #c8d9ff 45%, #ffffff 90%);
+    background-size: 200% auto;
+    -webkit-background-clip: text;
+    background-clip: text;
+    color: transparent;
+    -webkit-text-fill-color: transparent;
+}
+
+/* Build-up mode: not-yet-revealed words are invisible placeholders */
+.lyric-word--hidden {
+    opacity: 0;
+    animation: none !important;
+    /* keep the word in layout so line doesn't shift width */
+    visibility: hidden;
 }
 
 .animation-pulse {
