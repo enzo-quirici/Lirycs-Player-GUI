@@ -342,45 +342,6 @@ function resetState() {
     resetPlaybackState();
 }
 
-function normalizePearLyricLines(raw) {
-    if (!raw) return null;
-    if (typeof raw === 'string') {
-        const parsed = parseLRCString(raw);
-        return parsed.length ? parsed : null;
-    }
-    if (!Array.isArray(raw)) return null;
-    const lines = raw
-        .map((line) => {
-            if (line == null) return null;
-            if (typeof line === 'string') return { time: 0, text: line.trim() };
-            const text = String(line.text || line.words || line.line || line.lyricLine || '').trim();
-            if (!text) return null;
-            return { time: lineTimeMs(line), text };
-        })
-        .filter(Boolean);
-    return lines.length ? lines : null;
-}
-
-/** Pear API officielle : pas de paroles — on lit tout champ extra (beta / plugins). */
-function extractPearLyrics(state) {
-    const candidates = [
-        state.syncedLyrics,
-        state.syncedLyricLines,
-        state.currentLyrics,
-        state.lyrics,
-        state.lyrics?.lines,
-        state.lyrics?.synced,
-        state.song?.syncedLyrics,
-        state.song?.lyrics,
-        state.song?.lyrics?.lines,
-    ];
-    for (const raw of candidates) {
-        const lines = normalizePearLyricLines(raw);
-        if (lines?.length) return lines;
-    }
-    return null;
-}
-
 function normalizePearState(song, extra = {}) {
     const s = song && typeof song === 'object' ? song : {};
     const paused =
@@ -571,11 +532,6 @@ function processTrackState(state) {
     }
 
     resolveAndCacheCover(state);
-
-    const pearLyrics = extractPearLyrics(state);
-    if (pearLyrics) {
-        applyLyrics(pearLyrics, state, 'pear');
-    }
 
     if ((!cachedLyrics || cachedLyrics.length === 0) && !isFetchingFallback && !fallbackFailed && state.title) {
         fetchOnlineSyncedFallback(state);
