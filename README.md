@@ -1,5 +1,7 @@
 [![Electron](https://img.shields.io/badge/Electron-blue.svg?logo=electron&logoColor=white)](https://www.electron.org/)
 [![Linux](https://img.shields.io/badge/Linux-supported-green.svg?logo=linux&logoColor=white)](https://www.kernel.org/)
+[![Windows](https://img.shields.io/badge/Windows-supported-blue?logo=windows&logoColor=white)](https://adoptium.net/)
+[![macOS](https://img.shields.io/badge/macOS-supported-lightgrey.svg?logo=apple)](https://adoptium.net/)
 [![Arch Linux](https://img.shields.io/badge/Arch-Linux-blue?logo=arch-linux&logoColor=white)](https://archlinux.org/)
 [![Debian](https://img.shields.io/badge/Debian-supported-a80030.svg?logo=debian&logoColor=white)](https://www.debian.org/)
 [![Fedora](https://img.shields.io/badge/Fedora-supported-294172.svg?logo=fedora&logoColor=white)](https://getfedora.org/)
